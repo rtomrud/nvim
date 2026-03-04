@@ -22,8 +22,10 @@
 -- General ====================================================================
 vim.g.mapleader = ' ' -- Use `<Space>` as <Leader> key
 
+vim.o.clipboard   = 'unnamedplus'  -- Always use system clipboard
+
 vim.o.mouse       = 'a'            -- Enable mouse
-vim.o.mousescroll = 'ver:25,hor:6' -- Customize mouse scroll
+vim.o.mousescroll = 'ver:1,hor:6'  -- Customize mouse scroll
 vim.o.switchbuf   = 'usetab'       -- Use already opened buffers when switching
 vim.o.undofile    = true           -- Enable persistent undo
 
@@ -45,12 +47,14 @@ vim.o.pumborder      = 'single'   -- Use border in popup menu
 vim.o.pumheight      = 10         -- Make popup menu smaller
 vim.o.pummaxwidth    = 100        -- Make popup menu not too wide
 vim.o.ruler          = false      -- Don't show cursor coordinates
+vim.o.scrolloff      = 1          -- Lines to keep above and below the cursor
 vim.o.shortmess      = 'CFOSWaco' -- Disable some built-in completion messages
 vim.o.showmode       = false      -- Don't show mode in command line
 vim.o.signcolumn     = 'yes'      -- Always show signcolumn (less flicker)
 vim.o.splitbelow     = true       -- Horizontal splits will be below
 vim.o.splitkeep      = 'screen'   -- Reduce scroll during window split
 vim.o.splitright     = true       -- Vertical splits will be to the right
+vim.o.updatetime     = 1000       -- Write swap file to disk after this many ms
 vim.o.winborder      = 'single'   -- Use border in floating windows
 vim.o.wrap           = false      -- Don't visually wrap lines (toggle with \w)
 
