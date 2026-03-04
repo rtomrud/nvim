@@ -60,6 +60,24 @@ now_if_args(function()
     -- - Execute `:=require('nvim-treesitter').get_available()`
     -- - Visit 'SUPPORTED_LANGUAGES.md' file at
     --   https://github.com/nvim-treesitter/nvim-treesitter/blob/main
+    'bash',
+    'c',
+    'css',
+    'dockerfile',
+    'html',
+    'markdown_inline',
+    'java',
+    'javadoc',
+    'javascript',
+    'jsdoc',
+    'json',
+    'jsx',
+    'php',
+    'python',
+    'sql',
+    'tsx',
+    'typescript',
+    'yaml',
   }
   local isnt_installed = function(lang)
     return #vim.api.nvim_get_runtime_file('parser/' .. lang .. '.*', false) == 0
@@ -128,6 +146,53 @@ later(function()
     -- Map of filetype to formatters
     -- Make sure that necessary CLI tool is available
     -- formatters_by_ft = { lua = { 'stylua' } },
+    formatters_by_ft = {
+      css = { 'prettier' },
+      graphql = { 'prettier' },
+      html = { 'prettier' },
+      lua = { 'stylua' },
+      markdown = { 'prettier' },
+      java = { 'prettier_plugin_java' },
+      javascript = { 'prettier' },
+      javascriptreact = { 'prettier' },
+      json = { 'prettier' },
+      jsonc = { 'prettier' },
+      php = { 'prettier_plugin_php' },
+      scss = { 'prettier' },
+      sql = { 'prettier_plugin_sql_cst' },
+      typescript = { 'prettier' },
+      typescriptreact = { 'prettier' },
+      vue = { 'prettier' },
+      xml = { 'prettier_plugin_xml' },
+      yaml = { 'prettier' },
+    },
+
+    formatters = {
+      prettier = {
+        command = "prettier",
+      },
+      prettier_plugin_java = {
+        inherit = "prettier",
+        append_args = { "--plugin=prettier-plugin-java" },
+      },
+      prettier_plugin_php = {
+        inherit = "prettier",
+        append_args = { "--plugin=@prettier/plugin-php" },
+      },
+      prettier_plugin_sql_cst = {
+        inherit = "prettier",
+        append_args = { "--plugin=prettier-plugin-sql-cst" },
+        options = {
+          ft_parsers = {
+            sql = "postgresql",
+          },
+        },
+      },
+      prettier_plugin_xml = {
+        inherit = "prettier",
+        append_args = { "--plugin=@prettier/plugin-xml" },
+      },
+    }
   })
 end)
 
@@ -156,6 +221,24 @@ later(function() add({ 'https://github.com/rafamadriz/friendly-snippets' }) end)
 --   add({ 'https://github.com/mason-org/mason.nvim' })
 --   require('mason').setup()
 -- end)
+now_if_args(function()
+  add({
+    'https://github.com/mason-org/mason.nvim',
+    'https://github.com/mason-org/mason-lspconfig.nvim',
+  })
+
+  require('mason').setup()
+  require('mason-lspconfig').setup({
+    ensure_installed = {
+      'eslint',
+      'jdtls',
+      'lua_ls',
+      'phpactor',
+      'ts_ls',
+    },
+    automatic_enable = true,
+  })
+end)
 
 -- Beautiful, usable, well maintained color schemes outside of 'mini.nvim' and
 -- have full support of its highlight groups. Use if you don't like 'miniwinter'
@@ -171,3 +254,81 @@ later(function() add({ 'https://github.com/rafamadriz/friendly-snippets' }) end)
 --   -- Enable only one
 --   vim.cmd('color everforest')
 -- end)
+Config.now(function()
+  add({ 'https://github.com/projekt0n/github-nvim-theme' })
+  require('github-theme').setup({})
+  vim.cmd('colorscheme github_dark_default')
+end)
+
+-- Detect indentation style
+Config.now(function()
+  add({ 'https://github.com/NMAC427/guess-indent.nvim' })
+  require('guess-indent').setup({})
+end)
+
+-- Code completion
+Config.now(function()
+  add({
+    'https://github.com/milanglacier/minuet-ai.nvim',
+    'https://github.com/nvim-lua/plenary.nvim',
+  })
+
+  require('minuet').setup({
+    lsp = {
+      enabled_ft = {},
+      disabled_ft = {},
+      enabled_auto_trigger_ft = {},
+      disabled_auto_trigger_ft = {},
+      warn_on_blink_or_cmp = true,
+      adjust_indentation = true,
+    },
+    virtualtext = {
+      auto_trigger_ft = {},
+      auto_trigger_ignore_ft = {},
+      keymap = {
+        accept = '<C-y>',
+        accept_line = nil,
+        accept_n_lines = nil,
+        next = '<C-n>',
+        prev = '<C-p>',
+        dismiss = nil,
+      },
+      show_on_completion_menu = false,
+    },
+    provider = 'openai_fim_compatible',
+    context_window = 4096,
+    context_ratio = 0.75,
+    throttle = 1000,
+    debounce = 400,
+    notify = 'verbose', -- 'debug', 'verbose', 'warn', 'error'
+    request_timeout = 30,
+    curl_cmd = 'curl',
+    curl_extra_args = {},
+    add_single_line_entry = false,
+    n_completions = 2,
+    after_cursor_filter_length = 15,
+    before_cursor_filter_length = 2,
+    proxy = nil,
+    enable_predicates = {},
+    provider_options = {
+      openai_fim_compatible = {
+        model = 'huggingface.co/unsloth/qwen3-coder-30b-a3b-instruct-gguf:Q4_K_M',
+        stream = true,
+        end_point = 'http://localhost:12434/v1/completions',
+        api_key = 'TERM',
+        name = 'DMR',
+        optional = {
+          stop = nil, -- { '\n\n' }
+          max_tokens = nil,
+        },
+        transform = {},
+        template = {
+          prompt = function(prefix, suffix)
+            return '<|fim_prefix|>' .. prefix .. '<|fim_suffix|>' .. suffix .. '<|fim_middle|>'
+          end,
+          suffix = false,
+        },
+      }
+    },
+  })
+end)
